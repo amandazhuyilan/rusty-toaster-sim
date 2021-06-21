@@ -1,6 +1,5 @@
 mod actor;
 mod event;
-mod frame;
 mod world;
 mod utils;
 
