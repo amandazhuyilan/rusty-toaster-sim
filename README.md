@@ -1,5 +1,5 @@
 # `Rust`y Toaster Sim
-An autonomous vehicle software simulator in Rust, inspired by a toaster simulator idea.
+A simulated world written in Rust, inspired by a toaster simulator idea.
 
 ## Build
 cargo build
@@ -22,7 +22,8 @@ A frame is a snapshot of what's happening in the sim world labelled with a times
 ## Checklist
 - [x] Set up cargo project and define core terminologies
 - [x] Set up one stationary `actor` and output name of actor
-- [ ] Implement "world" feature where frame data at a specific timestamp can be made available when queried
+- [x] Implement `Actor::spawn()` function
+- [ ] Implement `World::state` feature where frame data at a specific timestamp can be made available when queried
 - [ ] Implement "clock" feature where the new frames are generated when "clock" is ticked
 - [ ] Set up one dynamic `actor`. This actor should be able to move around the sim world (status printed to `stdout`)
 - [ ] Set up 2 dynamic `actor`s that will collide with each other
