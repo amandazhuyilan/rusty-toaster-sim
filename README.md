@@ -1,8 +1,8 @@
 # `Rust`y Toaster Sim
-A simulated world written in Rust, inspired by a toaster simulator idea.
+A simulated world written in Rust, powered by [Bevy](https://bevyengine.org/), inspired by a toaster simulator idea.
 
-## Build
-cargo build
+## Run
+cargo run
 
 ## Test
 cargo test

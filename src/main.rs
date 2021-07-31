@@ -1,39 +1,53 @@
-mod actor;
-mod event;
-mod world;
-mod utils;
+use bevy::prelude::*;
 
-use std::time::Duration;
-use std::thread::sleep;
+struct Actor;
+struct Materials {
+    head_material: Handle<ColorMaterial>,
+}
 
-fn init_sim_world() -> Result<i32, &'static String> {
-    // set up a clean world
-    let mut all_actors: Vec::<actor::Actor> = Vec::<actor::Actor>::new();
-    let mut sim_time_now: usize = 0;
+fn setup(mut commands: Commands, mut materials: ResMut<Assets<ColorMaterial>>) {
+    commands.spawn_bundle(OrthographicCameraBundle::new_2d());
+    commands.insert_resource(Materials {
+        head_material: materials.add(Color::rgb(1.0, 1.0, 1.0).into())
+    });
+}
 
-    let actor1 = actor::spawn(
-        all_actors.len(),
-        String::from("shiba_0"),
-        utils::Vector2d(0.0, 0.0), 
-        String::from("eat burrito"),
-        10, sim_time_now);
-    
-    all_actors.push(actor1);
-    Ok(0)
+fn spawn_snake(mut commands: Commands, materials: Res<Materials>) {
+    commands.spawn_bundle(SpriteBundle {
+        material: materials.head_material.clone(),
+        sprite: Sprite::new(Vec2::new(20.0, 20.0)),
+        ..Default::default()
+    }).insert(Actor);
+}
+
+fn snake_movement(
+    keyboard_input: Res<Input<KeyCode>>,
+    // the `With` type allows us to say “I want entities that have a snake head,
+    // but I don’t care about the snake head component itself, just give me the transform”. 
+    mut head_positions: Query<&mut Transform, With<Actor>>,
+) {
+    // iterate through all entities that has the Actor and transform component 
+    for mut transform in head_positions.iter_mut() {
+        if keyboard_input.pressed(KeyCode::Left) {
+            transform.translation.x -= 2.;
+        }
+        if keyboard_input.pressed(KeyCode::Right) {
+            transform.translation.x += 2.;
+        }
+        if keyboard_input.pressed(KeyCode::Up) {
+            transform.translation.y += 2.;
+        }
+        if keyboard_input.pressed(KeyCode::Down) {
+            transform.translation.y -= 2.;
+        }
+    }
 }
 
 fn main() {
-    println!("Sim world initializing!");
-    match init_sim_world() {
-        Ok(_) => println!("Sim world ready!"),
-        Err(e) => println!("Problem starting sim world: {}", e),
-    };
-
-    // the for loop should be checking for end of simulation flag instead
-    for current_timestep in 0 .. 10 {
-        println!("Sim world running - current time step is: {:?}", current_timestep);
-        sleep(Duration::new(1, 0));
-    }
-    println!("Simulation over!");
-    println!("Sim world destroyed");
+    App::build()
+        .add_startup_system(setup.system())
+        .add_startup_stage("game_setup", SystemStage::single(spawn_snake.system()))
+        .add_system(snake_movement.system()) 
+        .add_plugins(DefaultPlugins)
+        .run();
 }

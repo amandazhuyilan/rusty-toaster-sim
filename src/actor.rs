@@ -26,7 +26,8 @@ pub fn spawn(id: usize,
              position: utils::Vector2d, 
              action_name: String,
              action_duration: usize,
-             current_timestamp: usize) -> Actor {
+             current_timestamp: 
+             usize) -> Actor {
     // TODO: Figure out who to own the created actor.
     // Ideally it should be owned by the actor array, but we need a way to push the new actor object (or referrence) into the actor array
     Actor {
