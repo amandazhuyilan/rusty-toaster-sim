@@ -1,33 +1,53 @@
 use bevy::prelude::*;
+use heron::prelude::*;
 
 struct Actor;
-struct Materials {
-    head_material: Handle<ColorMaterial>,
+
+#[bevy_main]
+fn main() {
+    App::build()
+        .add_plugins(DefaultPlugins)
+        .add_plugin(PhysicsPlugin::default()) // Add the Heron plugin
+        .insert_resource(Gravity::from(Vec3::new(0.0, -300.0, 0.0))) // Define gravity
+        .add_startup_system(spawn.system())
+        .add_system(actor_movement.system()) 
+        .run();
 }
 
-fn setup(mut commands: Commands, mut materials: ResMut<Assets<ColorMaterial>>) {
+fn spawn(mut commands: Commands, mut materials: ResMut<Assets<ColorMaterial>>) {
+    // Add camera for visualization
     commands.spawn_bundle(OrthographicCameraBundle::new_2d());
-    commands.insert_resource(Materials {
-        head_material: materials.add(Color::rgb(1.0, 1.0, 1.0).into())
-    });
+
+    // the size of our sprite in pixels
+    let size = Vec2::new(30.0, 30.0);
+    commands
+        //  here we add a Sprite. We can add any bundle of our choice; the
+        // only required component is a GlobalTransform
+        .spawn_bundle(SpriteBundle {
+            sprite: Sprite::new(size),
+            material: materials.add(Color::GREEN.into()),
+            transform: Transform::from_translation(Vec3::new(0.0, 200.0, 0.0)),
+            ..Default::default()
+        })
+        // Make it a physics body, by adding the RigidBody component
+        .insert(RigidBody::Dynamic)
+        // Attach a collision shape
+        .insert(CollisionShape::Cuboid {
+            // let the size be consistent with our sprite
+            half_extends: size.extend(0.0) / 2.0,
+            border_radius: None,
+        })
+        .insert(Actor);
 }
 
-fn spawn_snake(mut commands: Commands, materials: Res<Materials>) {
-    commands.spawn_bundle(SpriteBundle {
-        material: materials.head_material.clone(),
-        sprite: Sprite::new(Vec2::new(20.0, 20.0)),
-        ..Default::default()
-    }).insert(Actor);
-}
-
-fn snake_movement(
+fn actor_movement(
     keyboard_input: Res<Input<KeyCode>>,
     // the `With` type allows us to say “I want entities that have a snake head,
     // but I don’t care about the snake head component itself, just give me the transform”. 
-    mut head_positions: Query<&mut Transform, With<Actor>>,
+    mut actor_positions: Query<&mut Transform, With<Actor>>,
 ) {
     // iterate through all entities that has the Actor and transform component 
-    for mut transform in head_positions.iter_mut() {
+    for mut transform in actor_positions.iter_mut() {
         if keyboard_input.pressed(KeyCode::Left) {
             transform.translation.x -= 2.;
         }
@@ -41,13 +61,4 @@ fn snake_movement(
             transform.translation.y -= 2.;
         }
     }
-}
-
-fn main() {
-    App::build()
-        .add_startup_system(setup.system())
-        .add_startup_stage("game_setup", SystemStage::single(spawn_snake.system()))
-        .add_system(snake_movement.system()) 
-        .add_plugins(DefaultPlugins)
-        .run();
 }
