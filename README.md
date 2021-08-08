@@ -30,6 +30,7 @@ A frame is a snapshot of what's happening in the sim world labelled with a times
 
 ## `TODO` Checklist
 - [x] Set up cargo project and define core terminologies
-- [x] Select and integrate base game engine and physics engine 
+- [x] Select and integrate base game engine and physics engine
+- [x] Update Ego car pose (move some distance per fixed timestep) based on fixed time step.
+- [ ] Update 
 - [ ] Implement `GetWorldState()` method
-- [ ] Implement methods to play with time, e.g: `AdvanceByTimestep()`, `GoBackByTimeStep()`

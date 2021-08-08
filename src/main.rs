@@ -1,7 +1,13 @@
 use bevy::prelude::*;
 use heron::prelude::*;
+use bevy::core::FixedTimestep;
 
-struct Actor;
+const TIMESTEP_1_PER_SECOND: f64 = 60.0 / 60.0;   // 1 frame per second
+
+struct EgoCar;
+struct State {
+    speed: f32, 
+}
 
 #[bevy_main]
 fn main() {
@@ -10,7 +16,12 @@ fn main() {
         .add_plugin(PhysicsPlugin::default()) // Add the Heron plugin
         .insert_resource(Gravity::from(Vec3::new(0.0, -300.0, 0.0))) // Define gravity
         .add_startup_system(spawn.system())
-        .add_system(actor_movement.system()) 
+        .add_system_set(
+            SystemSet::new()
+                .with_run_criteria(FixedTimestep::step(TIMESTEP_1_PER_SECOND))
+                .with_system(update_ego_car_position.system())
+        )
+        // .add_system(update_ego_car_position.system()) 
         .run();
 }
 
@@ -26,7 +37,7 @@ fn spawn(mut commands: Commands, mut materials: ResMut<Assets<ColorMaterial>>) {
         .spawn_bundle(SpriteBundle {
             sprite: Sprite::new(size),
             material: materials.add(Color::GREEN.into()),
-            transform: Transform::from_translation(Vec3::new(0.0, 200.0, 0.0)),
+            transform: Transform::from_translation(Vec3::new(0.0, 0.0, 0.0)),
             ..Default::default()
         })
         // Make it a physics body, by adding the RigidBody component
@@ -37,28 +48,14 @@ fn spawn(mut commands: Commands, mut materials: ResMut<Assets<ColorMaterial>>) {
             half_extends: size.extend(0.0) / 2.0,
             border_radius: None,
         })
-        .insert(Actor);
+        .insert(EgoCar);
 }
 
-fn actor_movement(
-    keyboard_input: Res<Input<KeyCode>>,
-    // the `With` type allows us to say “I want entities that have a snake head,
-    // but I don’t care about the snake head component itself, just give me the transform”. 
-    mut actor_positions: Query<&mut Transform, With<Actor>>,
+fn update_ego_car_position(
+    mut ego_car_position: Query<&mut Transform, With<EgoCar>>,
 ) {
     // iterate through all entities that has the Actor and transform component 
-    for mut transform in actor_positions.iter_mut() {
-        if keyboard_input.pressed(KeyCode::Left) {
-            transform.translation.x -= 2.;
-        }
-        if keyboard_input.pressed(KeyCode::Right) {
-            transform.translation.x += 2.;
-        }
-        if keyboard_input.pressed(KeyCode::Up) {
-            transform.translation.y += 2.;
-        }
-        if keyboard_input.pressed(KeyCode::Down) {
-            transform.translation.y -= 2.;
-        }
+    for mut transform in ego_car_position.iter_mut() {
+        transform.translation.x += 2.;
     }
 }
