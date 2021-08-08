@@ -32,5 +32,6 @@ A frame is a snapshot of what's happening in the sim world labelled with a times
 - [x] Set up cargo project and define core terminologies
 - [x] Select and integrate base game engine and physics engine
 - [x] Update Ego car pose (move some distance per fixed timestep) based on fixed time step.
-- [ ] Update 
+- [ ] Add `Velocity` as component of Ego car and update Ego car position based on pre-set velocity
+- [ ] Method to set Ego car start and destination, periodically check if Ego car reaches destination, quit when it does.
 - [ ] Implement `GetWorldState()` method
