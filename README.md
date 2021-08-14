@@ -32,5 +32,7 @@ The toaster on wheels, or formally, the system to simulate. Note that the ego ca
 - [x] Update Ego car pose (move some distance per fixed timestep) based on fixed time step.
 - [x] Add `Velocity` as component of Ego car and update Ego car position based on pre-set velocity
 - [x] Set Ego and actor cars start/destination, periodically check if cars reached destination, update transform of the car if not reached destination.
+- [x] Add visualization for Ego position using text
 - [ ] Add heading for Ego and Actor cars
 - [ ] Use physic engine methods to check for collision
+- [ ] Add general visualize state methods for Ego and all actor cars
